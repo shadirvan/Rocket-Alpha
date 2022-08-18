@@ -4,15 +4,49 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
+    Rigidbody rb;
+    [SerializeField]float mainThrust = 1000f;
+    [SerializeField]float rotateThrust = 100f;
     // Start is called before the first frame update
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
+        
         
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        ProcessThrust();
+        ProcessRotation();
+
+    }
+
+    void ProcessRotation()
+    {
+        if (Input.GetKey(KeyCode.A))
+        {
+            RotatePlayer(rotateThrust);
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            RotatePlayer(-rotateThrust);
+        }
+    }
+
+    private void RotatePlayer(float rotationSpeed)
+    {
+        rb.freezeRotation = true;
+        transform.Rotate(Vector3.forward * Time.deltaTime * rotationSpeed);
+        rb.freezeRotation = false;
+    }
+
+    void ProcessThrust()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            rb.AddRelativeForce(Vector3.up * Time.deltaTime * mainThrust);
+        }
     }
 }
