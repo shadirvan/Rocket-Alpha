@@ -37,7 +37,7 @@ public class Movement : MonoBehaviour
         }
     }
 
-    private void RotatePlayer(float rotationSpeed)
+    void RotatePlayer(float rotationSpeed)
     {
         rb.freezeRotation = true;
         transform.Rotate(Vector3.forward * Time.deltaTime * rotationSpeed);
