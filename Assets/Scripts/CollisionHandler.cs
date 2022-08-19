@@ -5,12 +5,27 @@ using UnityEngine.SceneManagement;
 public class CollisionHandler : MonoBehaviour
 {
     [SerializeField]float levelLoadDelay = 1f;
+
+    AudioSource gameSoundSource;
+    [SerializeField] AudioClip crashSound;
+    [SerializeField] AudioClip winSound;
+
+    bool isTransitioning = false;
+
+    void Start() {
+        gameSoundSource = GetComponent<AudioSource>();
+        
+    }
+
+    
     void OnCollisionEnter(Collision other) 
     {
+        if(isTransitioning ){return;}
+
         switch (other.gameObject.tag)
         {
             case "Friendly":
-                Debug.Log("Hello You hit friendly object");
+                Debug.Log("You hit friendly object");
                 break;
             case "Finish":
                 StartSuccessSequence();
@@ -24,7 +39,9 @@ public class CollisionHandler : MonoBehaviour
 
     void StartSuccessSequence()
     {
-        // add sound effect on win
+        isTransitioning = true;
+        gameSoundSource.Stop();
+        gameSoundSource.PlayOneShot(winSound);   
         // add particle effect
         GetComponent<Movement>().enabled = false;
         Invoke("LoadNextLevel",levelLoadDelay);
@@ -32,7 +49,9 @@ public class CollisionHandler : MonoBehaviour
 
     void StartCrashSequence()
     {
-        // add sound effect on crash
+        isTransitioning = true;
+        gameSoundSource.Stop();
+        gameSoundSource.PlayOneShot(crashSound);   
         // add particle effect
         GetComponent<Movement>().enabled = false;
         Invoke("ReloadLevel",levelLoadDelay);
