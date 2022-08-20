@@ -8,6 +8,10 @@ public class Movement : MonoBehaviour
     [SerializeField]float rotateThrust = 100f;
 
     [SerializeField] AudioClip engineThrust;
+
+    [SerializeField] ParticleSystem EngineThrusterParticles;
+    [SerializeField] ParticleSystem LeftThrusterParticles;
+    [SerializeField] ParticleSystem RightThrusterParticles;
     AudioSource thrustAudio;
     Rigidbody rb;
     // Start is called before the first frame update
@@ -27,37 +31,80 @@ public class Movement : MonoBehaviour
 
     }
 
+    void ProcessThrust()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            StartThrusting();
+        }
+        else
+        {
+            StopThrusting();
+        }
+    }
     void ProcessRotation()
     {
         if (Input.GetKey(KeyCode.A))
         {
-            RotatePlayer(rotateThrust);
+            StartRotatingLeft();
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            RotatePlayer(-rotateThrust);
+            StartRotatingRight();
+        }
+        else
+        {
+            StopRotating();
         }
     }
+
+    void StartThrusting()
+    {
+        rb.AddRelativeForce(Vector3.up * Time.deltaTime * mainThrust);
+        if (!thrustAudio.isPlaying)
+        {
+            thrustAudio.PlayOneShot(engineThrust);
+        }
+        if (!EngineThrusterParticles.isPlaying)
+        {
+            EngineThrusterParticles.Play();
+        }
+    }
+    void StopThrusting()
+    {
+        thrustAudio.Stop();
+        EngineThrusterParticles.Stop();
+    }
+    
+    void StartRotatingLeft()
+    {
+        RotatePlayer(rotateThrust);
+        if (!RightThrusterParticles.isPlaying)
+        {
+            RightThrusterParticles.Play();
+        }
+    }
+    void StartRotatingRight()
+    {
+        RotatePlayer(-rotateThrust);
+        if (!LeftThrusterParticles.isPlaying)
+        {
+            LeftThrusterParticles.Play();
+        }
+    }
+
+    void StopRotating()
+    {
+        RightThrusterParticles.Stop();
+        LeftThrusterParticles.Stop();
+    }
+
+    
 
     void RotatePlayer(float rotationSpeed)
     {
         rb.freezeRotation = true;
         transform.Rotate(Vector3.forward * Time.deltaTime * rotationSpeed);
         rb.freezeRotation = false;
-    }
-
-    void ProcessThrust()
-    {
-        if (Input.GetKey(KeyCode.Space))
-        {
-            rb.AddRelativeForce(Vector3.up * Time.deltaTime * mainThrust);
-            if(!thrustAudio.isPlaying){
-                thrustAudio.PlayOneShot(engineThrust);
-            }
-        }
-        else
-        {
-            thrustAudio.Stop();
-        }
     }
 }
